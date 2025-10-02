@@ -1,0 +1,61 @@
+/* Body styling - centers the calculator */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;                       /* Full viewport height */
+  background-color: #7ea0d2;           /* Soft background color */
+  font-family: Arial, sans-serif;      /* Clean font */
+  margin: 0;                            /* Remove default body margin */
+}
+
+/* Calculator container */
+.calculator {
+  background-color: rgba(195, 103, 103, 0.548);  /* Semi-transparent dark red */
+  padding: 20px;                              /* Space inside calculator */
+  border-radius: 10px;                        /* Rounded corners */
+  box-shadow: 0 4px 15px rgba(76, 204, 127, 0.2); /* Subtle shadow */
+  width: 250px;                               /* Fixed width */
+}
+
+/* Display input */
+#display {
+  width: 100%;                  /* Full width of calculator */
+  height: 50px;                 /* Height of display */
+  margin-bottom: 10px;          /* Space below the display */
+  font-size: 24px;              /* Big, readable text */
+  text-align: right;            /* Numbers aligned to right */
+  padding: 5px 10px;            /* Inner spacing */
+  border-radius: 5px;           /* Rounded corners */
+  border: 1px solid #6c07ab;       /* Light gray border */
+  box-sizing: border-box;       /* Include padding in width */
+}
+
+/* General button styling */
+button {
+  width: 50px;                  /* Square buttons */
+  height: 50px;
+  margin: 5px;                  /* Space between buttons */
+  font-size: 18px;              /* Number/operator size */
+  border: none;                 /* No border */
+  border-radius: 5px;           /* Rounded corners */
+  cursor: pointer;              /* Pointer on hover */
+  background-color: #e77a37d9;    /* Light gray buttons */
+  transition: background-color 0.2s; /* Smooth hover */
+}
+
+/* Hover effect for general buttons */
+button:hover {
+  background-color: #0f3f7a;    /* Slightly darker on hover */
+}
+
+/* Operator buttons (+, -, *, /, =) */
+button.operator {
+  background-color: #000000;    /* Orange background */
+  color: #fff;                  /* White text */
+}
+
+/* Hover effect for operator buttons */
+button.operator:hover {
+  background-color: #eaddd2;    /* Darker orange on hover */
+}

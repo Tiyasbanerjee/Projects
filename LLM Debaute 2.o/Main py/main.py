@@ -6,10 +6,10 @@ from typing import Optional
 import json
 import os
 import re
+import ast
 
 
-
-api_key = "your gemini-2.5-flash api key"
+api_key = "enter your gemini-2.5-flash free api key here"
 
 def call_gemini(top_p : float = 1 , temperature: float = 0.5 , key:str = api_key):
     return ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=temperature, top_p=top_p, api_key=key)
@@ -21,9 +21,9 @@ def write_output_to_file(output_text: str):
     file_name = "out_put_of_llm_convertation_2.txt"
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
     with open(file_path, "a") as f:  
-            f.write("=== New LLM Output ===\n")
+            f.write("---------------------New LLM Output-----------------------\n")
             f.write(output_text + "\n\n")
-            print(f"✅ Output written to {file_path}")
+            
 
 
 
@@ -38,7 +38,7 @@ def add_mem( list_ , mem ):   # type: ignore
             return list_        # type: ignore
 
 
-def parse_llm_json_safely(resp: str):
+def parse_llm_json_safely(resp: str): # type: ignore
 
     stack = []
     start_idx = None
@@ -47,7 +47,7 @@ def parse_llm_json_safely(resp: str):
         if char == '{':
             if start_idx is None:
                 start_idx = idx
-            stack.append('{')
+            stack.append('{')   # type: ignore
         elif char == '}' and stack:
             stack.pop()
             if not stack and start_idx is not None:
@@ -57,15 +57,12 @@ def parse_llm_json_safely(resp: str):
                 cleaned = raw_json_str.strip()
 
                 # Replace smart quotes with regular ones
-                cleaned = cleaned.replace("‘", "'").replace("’", "'")
+                cleaned = cleaned.replace("`", "'").replace("`", "'")
                 cleaned = cleaned.replace("“", '"').replace("”", '"')
 
-                # Remove trailing commas before closing } or ]
                 cleaned = re.sub(r',(\s*[}\]])', r'\1', cleaned)
 
                 
-
-                # Try parsing using json first
                 try:
                     return json.loads(cleaned)
                 except json.JSONDecodeError:
@@ -76,8 +73,6 @@ def parse_llm_json_safely(resp: str):
                        
                         return None
 
-    # If no JSON block found at all
-    print(f"❌ No valid JSON block found in response:\n{resp}")
     return None
     
 
@@ -175,7 +170,7 @@ Instructions:
 
                     while True:
                         # Format the system message with expected JSON schema
-                        messages = [
+                        messages = [     # type: ignore
                             SystemMessage(
                                 content=f"""
             Your personality: {personality}
@@ -198,23 +193,22 @@ Instructions:
                              structured_result = ResultManagerLLM.model_validate_json(response.content)  # type: ignore
 
 
-                             parsed_json = parse_llm_json_safely(response.content)
+                             parsed_json = parse_llm_json_safely(response.content)   # type: ignore
                              
                              if parsed_json is None:
-                                print("❌ Could not parse JSON. Retrying...")
-                                response = llm.invoke(messages)
+                                print("------X------")
+                                response = llm.invoke(messages)   # type: ignore
                                 continue  # retry
                              else:
                                  structured_result = ResultManagerLLM.model_validate(parsed_json)  # type: ignore    
                                  if structured_result.ok:
                                      return structured_result
                                  else:
-                                    print("❗ Advice from system:", structured_result.advice)
+                                    print("!Advice from system:--->>>", structured_result.advice)
                                     memory = structured_result.memory
                                     user_querr = input(":----->>> ")
 
                         except Exception:
-                                print("❌------------- Failed to parse LLM response. Retrying...")
                                 continue
 
 
@@ -253,7 +247,7 @@ You are a debate coach AI. Your role is to help two AI debaters improve their ar
 
                                 """
 
-            message = [
+            message = [           #type: ignore
                    SystemMessage(
                        f"""Your personality is : {personality}.
                           Your memory: {memory}.
@@ -298,7 +292,7 @@ You are a debate coach AI. Your role is to help two AI debaters improve their ar
                         schema_json_str = json.dumps(ResultMainModel.model_json_schema(), indent=2)
 
                         # Prepare messages for the LLM
-                        messages = [
+                        messages = [          # type: ignore
                             SystemMessage(
                                 content=f"""
                     You are a debater. Respond to the opponent's last statement according to your personality, memory, and the debate context.
@@ -330,16 +324,14 @@ You are a debate coach AI. Your role is to help two AI debaters improve their ar
                         
                         while True:
                                     response = llm.invoke(messages)  # type: ignore
-                                    parsed_json = parse_llm_json_safely(response.content)  # returns dict or None
+                                    parsed_json = parse_llm_json_safely(response.content)  # type: ignore
                                     if parsed_json != None:
                                         try:
                                             structured_result = ResultMainModel.model_validate(parsed_json)  # type: ignore
                                             return structured_result
                                         except Exception:
-                                            print("❌ Parsed JSON did not match schema. Retrying...")
                                             continue
                                     else:
-                                        print("❌ Could not parse JSON. Retrying...")
                                         continue  # retry the LLM call
 
 
@@ -368,32 +360,32 @@ def main():
         # LLM 1 turn
         LLM_1_RESPONSE = debate_manager.main_model(
             opponent_reply=llm_2_reply,
-            personality=LLM_1_PERSONALITY,
-            top_p=float(LLM_1_TOP_P),
-            temperature=float(LLM_1_TEMPERATURE),
-            topic=TOPIC_FOR_LLM_1,
-            memory=str(mem_list),
-            advice=advice
+            personality=LLM_1_PERSONALITY, # type: ignore
+            top_p=float(LLM_1_TOP_P),     # type: ignore
+            temperature=float(LLM_1_TEMPERATURE), # type: ignore
+            topic=TOPIC_FOR_LLM_1,     #type: ignore
+            memory=str(mem_list), #type: ignore
+            advice=advice #type: ignore
         )
 
         llm_1_reply = LLM_1_RESPONSE.Reply
         llm_1_memory = LLM_1_RESPONSE.Memory
-        mem_list = add_mem(mem_list, llm_1_memory)
+        mem_list = add_mem(mem_list, llm_1_memory)  # type: ignore
 
         
         LLM_2_RESPONSE = debate_manager.main_model(
             opponent_reply=llm_1_reply,
-            personality=LLM_2_PERSONALITY,
-            top_p=float(LLM_2_TOP_P),
-            temperature=float(LLM_2_TEMPERATURE),
-            topic=TOPIC_FOR_LLM_2,
-            memory=str(mem_list),
-            advice=advice
+            personality=LLM_2_PERSONALITY,  #type: ignore
+            top_p=float(LLM_2_TOP_P),       # type: ignore
+            temperature=float(LLM_2_TEMPERATURE), # type: ignore
+            topic=TOPIC_FOR_LLM_2,   # type: ignore
+            memory=str(mem_list),    # type: ignore
+            advice=advice           # type: ignore
         )
 
         llm_2_reply = LLM_2_RESPONSE.Reply
         llm_2_memory = LLM_2_RESPONSE.Memory
-        mem_list = add_mem(mem_list, llm_2_memory)
+        mem_list = add_mem(mem_list, llm_2_memory)    # type: ignore
 
         
         print(f"\n\n🔴 LLM 1: {llm_1_reply}")
@@ -405,13 +397,13 @@ def main():
         user_querry = input("📌 Enter query ('1'), end ('0'), or press Enter to continue:\n::----->>> ").strip()
         if user_querry == "1":
             querry = input("Enter your query:\n::----->>> ")
-            advice = debate_manager.support_user(
+            advice = debate_manager.support_user(     # type: ignore
                 user_querry=querry,
-                memory=str(mem_list),
+                memory=str(mem_list),  # type: ignore
                 cur1=llm_1_reply,
                 cur2=llm_2_reply,
-                topic1=TOPIC_FOR_LLM_1,
-                topic2=TOPIC_FOR_LLM_2
+                topic1=TOPIC_FOR_LLM_1,   # type: ignore
+                topic2=TOPIC_FOR_LLM_2   # type: ignore
             )
         elif user_querry == "0":
             print("✅ Debate ended by user.")

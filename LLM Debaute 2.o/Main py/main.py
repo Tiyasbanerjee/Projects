@@ -9,7 +9,7 @@ import re
 import ast
 
 
-api_key = "AIzaSyDHs0j6GydTVSQj5ChprBEa8x7U7IXESmU"
+api_key = "enter your own gemini-2.5-flash api key"
 
 def call_gemini(top_p : float = 1 , temperature: float = 0.5 , key:str = api_key):
     return ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=temperature, top_p=top_p, api_key=key)

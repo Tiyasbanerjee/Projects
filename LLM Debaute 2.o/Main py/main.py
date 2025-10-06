@@ -29,7 +29,7 @@ def write_output_to_file(output_text: str):
 
 def add_mem( list_ , mem ):   # type: ignore
      
-     if len(list_) == 10:      # type: ignore
+     if len(list_) == 5:      # type: ignore
             list_.pop(0)      # type: ignore
             list_.append(mem)  # type: ignore
             return list_       # type: ignore
